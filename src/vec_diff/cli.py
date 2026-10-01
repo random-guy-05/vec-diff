@@ -23,11 +23,29 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("b", type=Path)
     p.add_argument("--task", required=True, choices=["T1", "T2", "T3"])
     p.add_argument("--top-genes", type=int, default=15)
-    p.add_argument("--spatial-sample", type=int, default=512, help="Max cells per cloud for pairwise-distance shape sketch.")
-    p.add_argument("--json", type=Path, dest="json_path", help="Write full machine-readable report.")
+    p.add_argument(
+        "--spatial-sample",
+        type=int,
+        default=512,
+        help="Max cells per cloud for pairwise-distance shape sketch.",
+    )
+    p.add_argument(
+        "--json",
+        type=Path,
+        dest="json_path",
+        help="Write full machine-readable report.",
+    )
     p.add_argument("--markdown", type=Path, help="Write Markdown report.")
-    p.add_argument("--fail-if-equivalent", action="store_true", help="Exit 3 if files are scorer-equivalent under a recognized invariance.")
-    p.add_argument("--fail-if-material", action="store_true", help="Exit 4 if scorer-relevant content materially differs.")
+    p.add_argument(
+        "--fail-if-equivalent",
+        action="store_true",
+        help="Exit 3 if files are scorer-equivalent under a recognized invariance.",
+    )
+    p.add_argument(
+        "--fail-if-material",
+        action="store_true",
+        help="Exit 4 if scorer-relevant content materially differs.",
+    )
     p.add_argument("--version", action="version", version=f"vec-diff {__version__}")
     return p
 
@@ -36,30 +54,53 @@ def _print(report: dict) -> None:
     c = Console()
     c.print(f"[bold]{report['classification']}[/bold]")
     c.print(report["interpretation"])
-    e = report["expression"]
-    t = Table(title="Expression")
-    t.add_column("measure"); t.add_column("value")
-    for k in ["expression_multiset_overlap", "pseudobulk_pearson", "pseudobulk_mean_abs_delta", "rowwise_mean_abs_diff", "rowwise_rmse"]:
-        v = e.get(k)
-        t.add_row(k, "—" if v is None else f"{v:.6g}")
-    c.print(t)
+
+    expression = report["expression"]
+    table = Table(title="Expression")
+    table.add_column("measure")
+    table.add_column("value")
+    for key in [
+        "expression_multiset_overlap",
+        "pseudobulk_pearson",
+        "pseudobulk_mean_abs_delta",
+        "rowwise_mean_abs_diff",
+        "rowwise_rmse",
+    ]:
+        value = expression.get(key)
+        table.add_row(key, "—" if value is None else f"{value:.6g}")
+    c.print(table)
+
     if report.get("spatial"):
-        s = report["spatial"]
-        t2 = Table(title="Spatial")
-        t2.add_column("measure"); t2.add_column("value")
-        for k in ["paired_multiset_overlap", "log_scale_b_over_a", "kabsch_relative_rmsd", "pairwise_distance_wasserstein_relative"]:
-            v = s.get(k)
-            t2.add_row(k, "—" if v is None else f"{v:.6g}")
-        c.print(t2)
+        spatial = report["spatial"]
+        spatial_table = Table(title="Spatial")
+        spatial_table.add_column("measure")
+        spatial_table.add_column("value")
+        for key in [
+            "paired_multiset_overlap",
+            "log_scale_b_over_a",
+            "kabsch_relative_rmsd",
+            "pairwise_distance_wasserstein_relative",
+        ]:
+            value = spatial.get(key)
+            spatial_table.add_row(key, "—" if value is None else f"{value:.6g}")
+        c.print(spatial_table)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
-    for p in [args.a, args.b]:
-        if not p.exists():
-            raise SystemExit(f"file not found: {p}")
-    report = compare_files(args.a, args.b, args.task, args.top_genes, args.spatial_sample)
+    for path in [args.a, args.b]:
+        if not path.exists():
+            raise SystemExit(f"file not found: {path}")
+
+    report = compare_files(
+        args.a,
+        args.b,
+        args.task,
+        args.top_genes,
+        args.spatial_sample,
+    )
     _print(report)
+
     if args.json_path:
         args.json_path.parent.mkdir(parents=True, exist_ok=True)
         write_json(report, args.json_path)
