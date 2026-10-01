@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vec-diff"
+version = "1.0.0"
+description = "Scorer-aware comparison of Virtual Embryo Challenge .h5ad prediction files."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+dependencies = [
+  "anndata>=0.10",
+  "numpy>=1.24",
+  "scipy>=1.10",
+  "rich>=13.0",
+]
+keywords = ["virtual-embryo", "anndata", "h5ad", "diff", "competition"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+vec-diff = "vec_diff.cli:main"
+
+[project.urls]
+Challenge = "https://virtualembryo.ai/challenge"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
