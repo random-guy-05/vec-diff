@@ -33,7 +33,7 @@ def _fmt(v, digits=6):
         if not math.isfinite(x):
             return "—"
         return f"{x:.{digits}g}"
-    except Exception:
+    except (TypeError, ValueError, OverflowError):
         return str(v)
 
 

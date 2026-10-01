@@ -1,16 +1,28 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from pathlib import Path
 
 import numpy as np
 
-from .anndata_io import expression_summary, gene_alignment, load_anndata_backed, paired_hashes, read_coords
+from .anndata_io import (
+    expression_summary,
+    gene_alignment,
+    load_anndata_backed,
+    paired_hashes,
+    read_coords,
+)
 from .core import classify, multiset_overlap, sha256_file, spatial_stats
 
 
 def _key_diff(a, b):
     sa, sb = set(a), set(b)
     return sorted(sa - sb), sorted(sb - sa)
+
+
+def _close_adata_file(adata) -> None:
+    with suppress(AttributeError, OSError, ValueError):
+        adata.file.close()
 
 
 def compare_files(path_a: Path, path_b: Path, task: str, top_genes: int = 15, spatial_sample: int = 512) -> dict:
@@ -99,7 +111,5 @@ def compare_files(path_a: Path, path_b: Path, task: str, top_genes: int = 15, sp
             "metadata": metadata,
         }
     finally:
-        try: a.file.close()
-        except Exception: pass
-        try: b.file.close()
-        except Exception: pass
+        _close_adata_file(a)
+        _close_adata_file(b)
