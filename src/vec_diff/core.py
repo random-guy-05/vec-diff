@@ -260,36 +260,46 @@ def classify(
     if not genes_compatible:
         return (
             "INCOMPATIBLE",
-            "The files do not contain the same gene set, so "
-            "scorer-aware equivalence cannot be established.",
+            (
+                "The files do not contain the same gene set, so "
+                "scorer-aware equivalence cannot be established."
+            ),
         )
 
     if task == "T1":
         if expression_rowwise_identical:
             return (
                 "SCORER_CONTENT_IDENTICAL",
-                "Expression content is identical after scorer-style "
-                "float32 casting; differences are outside T1 "
-                "scorer-relevant X/gene content.",
+                (
+                    "Expression content is identical after scorer-style "
+                    "float32 casting; differences are outside T1 "
+                    "scorer-relevant X/gene content."
+                ),
             )
         if expression_multiset_overlap >= 1.0 - 1e-12:
             return (
                 "ROW_ORDER_ONLY",
-                "The exact predicted expression-row multiset is "
-                "identical; only cell row order and/or non-scorer "
-                "metadata differ. T1 metrics are row-order invariant.",
+                (
+                    "The exact predicted expression-row multiset is "
+                    "identical; only cell row order and/or non-scorer "
+                    "metadata differ. T1 metrics are row-order invariant."
+                ),
             )
         return (
             "MATERIAL",
-            "The predicted expression distribution differs in "
-            "scorer-relevant content.",
+            (
+                "The predicted expression distribution differs in "
+                "scorer-relevant content."
+            ),
         )
 
     if expression_rowwise_identical and coord_rowwise_identical:
         return (
             "SCORER_CONTENT_IDENTICAL",
-            "Expression and the first three spatial coordinates are "
-            "identical after scorer-style float32 casting.",
+            (
+                "Expression and the first three spatial coordinates are "
+                "identical after scorer-style float32 casting."
+            ),
         )
 
     if (
@@ -298,9 +308,11 @@ def classify(
     ):
         return (
             "ROW_ORDER_ONLY",
-            "The exact (expression, spatial_3D[:3]) paired-cell "
-            "multiset is identical; only row order and/or "
-            "non-scorer metadata differ.",
+            (
+                "The exact (expression, spatial_3D[:3]) paired-cell "
+                "multiset is identical; only row order and/or "
+                "non-scorer metadata differ."
+            ),
         )
 
     if (
@@ -310,14 +322,18 @@ def classify(
     ):
         return (
             "RIGID_FRAME_ONLY",
-            "Expression is rowwise identical and coordinates differ "
-            "only by a proper rigid rotation/translation within "
-            "tolerance; current VEC spatial metrics are "
-            "rotation/translation invariant.",
+            (
+                "Expression is rowwise identical and coordinates differ "
+                "only by a proper rigid rotation/translation within "
+                "tolerance; current VEC spatial metrics are "
+                "rotation/translation invariant."
+            ),
         )
 
     return (
         "MATERIAL",
-        "Expression and/or expression-to-position coupling differs "
-        "in scorer-relevant content.",
+        (
+            "Expression and/or expression-to-position coupling differs "
+            "in scorer-relevant content."
+        ),
     )
