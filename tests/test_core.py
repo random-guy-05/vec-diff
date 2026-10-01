@@ -1,6 +1,13 @@
 import numpy as np
 
-from vec_diff.core import classify, expression_differences, kabsch_rmsd, multiset_overlap, row_hashes_dense, spatial_stats
+from vec_diff.core import (
+    classify,
+    expression_differences,
+    kabsch_rmsd,
+    multiset_overlap,
+    row_hashes_dense,
+    spatial_stats,
+)
 
 
 def test_row_hash_order_invariant_overlap():
