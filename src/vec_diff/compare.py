@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from pathlib import Path
 
 import numpy as np
@@ -174,11 +175,7 @@ def compare_files(
             "metadata": metadata,
         }
     finally:
-        try:
+        with suppress(AttributeError, OSError):
             a.file.close()
-        except Exception:
-            pass
-        try:
+        with suppress(AttributeError, OSError):
             b.file.close()
-        except Exception:
-            pass
