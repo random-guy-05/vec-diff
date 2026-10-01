@@ -3,8 +3,8 @@ from __future__ import annotations
 import hashlib
 import math
 from collections import Counter
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 import numpy as np
 from scipy.spatial.distance import pdist
